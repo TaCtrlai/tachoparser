@@ -113,12 +113,4 @@ cat tachodata.ddd | dddparser -vu | jq . | less
 
 ## TODO
 
-- [x] parse 1st generation driver card data
-- [x] parse 2nd generation driver card data
-- [x] parse 2nd generation v2 driver card data
-- [x] parse 1st generation vu data
-- [x] parse 2nd generation vu data
-- [x] parse 2nd generation v2 vu data
-- [x] signature verification 1st generation
-- [x] signature verification 2nd generation
 - [ ] complete unit tests for all data types
