@@ -12,7 +12,8 @@ RUN ./dl_all_pks1.py
 WORKDIR /scripts/pks2
 RUN ./dl_all_pks2.py
 
-FROM golang:1.19 AS gobuilder
+FROM golang:1.24 AS gobuilder
+RUN apt install libc6
 WORKDIR /go/src/github.com/kyburz-switzerland-ag/tachoparser
 COPY ./ ./
 COPY --from=pythonbuilder /internal/pkg/certificates/pks1/ internal/pkg/certificates/pks1/
