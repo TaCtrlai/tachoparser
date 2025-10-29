@@ -15,22 +15,22 @@ RUN ./dl_all_pks2.py
 
 FROM golang:1.24 AS gobuilder
 RUN apt install libc6
-WORKDIR /go/src/github.com/TaCtrlai/tachoparser
-COPY ./ ./
+WORKDIR /go/src/github.com/traconiq/tachoparser
+COPY ./tachoparser .
 COPY --from=pythonbuilder /internal/pkg/certificates/pks1/ internal/pkg/certificates/pks1/
 COPY --from=pythonbuilder /internal/pkg/certificates/pks2/ internal/pkg/certificates/pks2/
 RUN go mod vendor
-WORKDIR /go/src/github.com/TaCtrlai/tachoparser/cmd/dddparser
+WORKDIR /go/src/github.com/traconiq/tachoparser/cmd/dddparser
 RUN go build .
-WORKDIR /go/src/github.com/TaCtrlai/tachoparser/cmd/dddserver
+WORKDIR /go/src/github.com/traconiq/tachoparser/cmd/dddserver
 RUN go build .
-WORKDIR /go/src/github.com/TaCtrlai/tachoparser/cmd/dddclient
+WORKDIR /go/src/github.com/traconiq/tachoparser/cmd/dddclient
 RUN go build .
 
 FROM ubuntu
 RUN apt install libc6
 COPY --from=gobuilder /etc/ssl/certs/* /etc/ssl/certs/
 COPY --from=gobuilder /usr/share/zoneinfo/* /usr/share/zoneinfo/
-COPY --from=gobuilder /go/src/github.com/TaCtrlai/tachoparser/cmd/dddserver/dddserver /dddserver
+COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddserver/dddserver /dddserver
 ENTRYPOINT ["/dddserver"]
 CMD []
