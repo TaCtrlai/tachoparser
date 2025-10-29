@@ -14,16 +14,16 @@ RUN ./dl_all_pks2.py
 
 FROM golang:1.24 AS gobuilder
 RUN apt install libc6
-WORKDIR /go/src/github.com/kyburz-switzerland-ag/tachoparser
+WORKDIR /go/src/github.com/tactrlai/tachoparser
 COPY ./ ./
 COPY --from=pythonbuilder /internal/pkg/certificates/pks1/ internal/pkg/certificates/pks1/
 COPY --from=pythonbuilder /internal/pkg/certificates/pks2/ internal/pkg/certificates/pks2/
 RUN go mod vendor
-WORKDIR /go/src/github.com/kyburz-switzerland-ag/tachoparser/cmd/dddparser
+WORKDIR /go/src/github.com/TaCtrlai/tachoparser/cmd/dddparser
 RUN go build .
-WORKDIR /go/src/github.com/kyburz-switzerland-ag/tachoparser/cmd/dddserver
+WORKDIR /go/src/github.com/TaCtrlai/tachoparser/cmd/dddserver
 RUN go build .
-WORKDIR /go/src/github.com/kyburz-switzerland-ag/tachoparser/cmd/dddclient
+WORKDIR /go/src/github.com/TaCtrlai/tachoparser/cmd/dddclient
 RUN go build .
 
 FROM scratch
