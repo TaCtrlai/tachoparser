@@ -9,9 +9,9 @@ RUN ls
 COPY ./tachoparser/scripts/ /scripts/
 COPY ./tachoparser/internal/ /internal/
 WORKDIR /scripts/pks1
-RUN ./dl_all_pks1.py
+#RUN ./dl_all_pks1.py
 WORKDIR /scripts/pks2
-RUN ./dl_all_pks2.py
+#RUN ./dl_all_pks2.py
 
 FROM golang:1.24 AS gobuilder
 RUN apt install libc6
