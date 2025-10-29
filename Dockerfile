@@ -6,7 +6,7 @@ RUN pip install lxml
 RUN mkdir /scripts
 RUN mkdir /internal
 COPY /scripts/ /scripts/
-COPY ./internal/ /internal/
+COPY /internal/ /internal/
 WORKDIR /scripts/pks1
 RUN ./dl_all_pks1.py
 WORKDIR /scripts/pks2
