@@ -5,8 +5,8 @@ RUN pip install requests
 RUN pip install lxml
 RUN mkdir /scripts
 RUN mkdir /internal
-COPY /scripts/ /scripts/
-COPY /internal/ /internal/
+COPY ./scripts/ /scripts/
+COPY ./internal/ /internal/
 WORKDIR /scripts/pks1
 RUN ./dl_all_pks1.py
 WORKDIR /scripts/pks2
@@ -14,7 +14,7 @@ RUN ./dl_all_pks2.py
 
 FROM golang:1.24 AS gobuilder
 RUN apt install libc6
-WORKDIR /go/src/github.com/tactrlai/tachoparser
+WORKDIR /go/src/github.com/TaCtrlai/tachoparser
 COPY ./ ./
 COPY --from=pythonbuilder /internal/pkg/certificates/pks1/ internal/pkg/certificates/pks1/
 COPY --from=pythonbuilder /internal/pkg/certificates/pks2/ internal/pkg/certificates/pks2/
@@ -36,6 +36,6 @@ COPY --from=gobuilder /lib/x86_64-linux-gnu/libm.so.6 /lib/x86_64-linux-gnu/
 # COPY --from=gobuilder /lib/x86_64-linux-gnu/libnss*.so.? /lib/x86_64-linux-gnu/
 COPY --from=gobuilder /etc/ssl/certs/* /etc/ssl/certs/
 COPY --from=gobuilder /usr/share/zoneinfo/* /usr/share/zoneinfo/
-COPY --from=gobuilder /go/src/github.com/kyburz-switzerland-ag/tachoparser/cmd/dddserver/dddserver /dddserver
+COPY --from=gobuilder /go/src/github.com/TaCtrlai/tachoparser/cmd/dddserver/dddserver /dddserver
 ENTRYPOINT ["/dddserver"]
 CMD []
