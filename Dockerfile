@@ -38,3 +38,5 @@ COPY --from=gobuilder /usr/share/zoneinfo/* /usr/share/zoneinfo/
 COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddsimple/dddsimple /dddsimple
 COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddserver/dddserver /dddserver
 COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddparser/dddparser /dddparser
+
+CMD []
