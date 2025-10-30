@@ -29,14 +29,14 @@ RUN go build .
 WORKDIR /go/src/github.com/traconiq/tachoparser/cmd/dddsimple
 RUN go build .
 
-FROM ubuntu
-RUN apt install libc6
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip
+FROM python:3.10-alpine AS builder
+ENV PYTHONUNBUFFERED=1
+RUN apk add --no-cache libc6-compat
 COPY --from=gobuilder /etc/ssl/certs/* /etc/ssl/certs/
 COPY --from=gobuilder /usr/share/zoneinfo/* /usr/share/zoneinfo/
 COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddsimple/dddsimple /dddsimple
 COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddserver/dddserver /dddserver
 COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddparser/dddparser /dddparser
-
-CMD []
+COPY ./app.py /
+EXPOSE 8080
+CMD ["python", "app.py"]
