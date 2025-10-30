@@ -26,11 +26,15 @@ WORKDIR /go/src/github.com/traconiq/tachoparser/cmd/dddserver
 RUN go build .
 WORKDIR /go/src/github.com/traconiq/tachoparser/cmd/dddclient
 RUN go build .
+WORKDIR /go/src/github.com/traconiq/tachoparser/cmd/dddsimple
+RUN go build .
 
 FROM ubuntu
 RUN apt install libc6
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip
 COPY --from=gobuilder /etc/ssl/certs/* /etc/ssl/certs/
 COPY --from=gobuilder /usr/share/zoneinfo/* /usr/share/zoneinfo/
+COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddsimple/dddsimple /dddsimple
 COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddserver/dddserver /dddserver
-ENTRYPOINT ["/dddserver"]
-CMD []
+COPY --from=gobuilder /go/src/github.com/traconiq/tachoparser/cmd/dddparser/dddparser /dddparser
