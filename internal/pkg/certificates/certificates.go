@@ -19,10 +19,10 @@ import (
 All public keys downloaded from https://dtc.jrc.ec.europa.eu/ for "DT" (Digital Tachograph, 1st gen) and "ST" (Smart Tachograph, 2nd gen)
 */
 
-//go:embed pks1/*.bin
+//go:embed all:pks1
 var pks1 embed.FS
 
-//go:embed pks2/*.bin
+//go:embed all:pks2
 var pks2 embed.FS
 
 func getPks1Fs() fs.FS {
