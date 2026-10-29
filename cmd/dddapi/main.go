@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/traconiq/tachoparser/internal/pkg/certificates"
@@ -15,6 +16,10 @@ import (
 var (
 	port = flag.String("port", "8080", "Port to listen on")
 	addr = flag.String("addr", "", "Address to listen on (empty = all interfaces)")
+
+	// The decoder caches certificates in package-level maps without locking,
+	// so concurrent parses crash the process with a fatal concurrent map access.
+	decodeMu sync.Mutex
 )
 
 func main() {
@@ -88,7 +93,7 @@ func parseHandler(c *gin.Context) {
 
 	// Try Card first
 	var card decoder.Card
-	verified, err := decoder.UnmarshalTLV(data, &card)
+	verified, err := unmarshalCard(data, &card)
 	if err == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"type":     "card",
@@ -100,7 +105,7 @@ func parseHandler(c *gin.Context) {
 
 	// If Card parsing failed, try VU
 	var vu decoder.Vu
-	verified, err = decoder.UnmarshalTV(data, &vu)
+	verified, err = unmarshalVu(data, &vu)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to parse as either Card or VU",
@@ -124,7 +129,7 @@ func parseCardHandler(c *gin.Context) {
 	}
 
 	var card decoder.Card
-	verified, err := decoder.UnmarshalTLV(data, &card)
+	verified, err := unmarshalCard(data, &card)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to parse as Card",
@@ -148,7 +153,7 @@ func parseVuHandler(c *gin.Context) {
 	}
 
 	var vu decoder.Vu
-	verified, err := decoder.UnmarshalTV(data, &vu)
+	verified, err := unmarshalVu(data, &vu)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to parse as VU",
@@ -162,6 +167,18 @@ func parseVuHandler(c *gin.Context) {
 		"verified": verified,
 		"data":     vu,
 	})
+}
+
+func unmarshalCard(data []byte, card *decoder.Card) (bool, error) {
+	decodeMu.Lock()
+	defer decodeMu.Unlock()
+	return decoder.UnmarshalTLV(data, card)
+}
+
+func unmarshalVu(data []byte, vu *decoder.Vu) (bool, error) {
+	decodeMu.Lock()
+	defer decodeMu.Unlock()
+	return decoder.UnmarshalTV(data, vu)
 }
 
 func getDataFromRequest(c *gin.Context) ([]byte, error) {
